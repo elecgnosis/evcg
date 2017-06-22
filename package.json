@@ -4,16 +4,18 @@
   "description": "Full-stack app to accept zip codes and display weather, time, and elevation.",
   "main": "dist/main.js",
   "scripts": {
-    "build": "babel src -d dist",
+    "build-html": "cpx src/**/*.html dist",
+    "build-js": "babel src -d dist",
+    "build": "npm run build-js && npm run build-html",
     "main": "node dist/main.js",
     "start": "npm run build && npm run main"
   },
   "author": "Dan Lopez",
+  "repository": {},
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "6.24.1",
     "babel-preset-es2015": "6.24.1",
-    "babel-preset-es2017": "^6.24.1",
     "babel-register": "6.24.1",
     "chai": "4.0.2",
     "eslint": "4.0.0",
@@ -23,6 +25,10 @@
     "sinon": "2.3.4"
   },
   "dependencies": {
+    "backbone": "1.3.3",
+    "cpx": "1.5.0",
+    "crypto-js": "3.1.9-1",
+    "express": "4.15.3",
     "request": "2.81.0"
   },
   "false": {}

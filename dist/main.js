@@ -4,75 +4,50 @@ var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
 
-var _request = require('request');
+var _path = require('path');
 
-var _request2 = _interopRequireDefault(_request);
+var _path2 = _interopRequireDefault(_path);
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _caller = require('./caller');
+
+var _caller2 = _interopRequireDefault(_caller);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var zip = process.argv.slice(2)[0];
+if (process.argv.length < 3) {
+  console.error('Provide cipher.');
+  process.exit(1);
+}
 
-var weather = new Promise(function (resolve, reject) {
-  var options = {
-    uri: 'http://api.openweathermap.org/data/2.5/weather',
-    qs: {
-      zip: zip,
-      APPID: '14fd4bddba4bb686aa932f4e034649df'
-    }
-  };
-
-  (0, _request2.default)(options, function (error, response, body) {
-    var bodyParsed = JSON.parse(body);
-    resolve({
-      cityName: bodyParsed.name,
-      temp: bodyParsed.main.temp,
-      lat: bodyParsed.coord.lat,
-      long: bodyParsed.coord.lon
-    });
+var caller = new _caller2.default(process.argv[2]);
+// short-circuit for backend-only execution
+if (process.argv.length > 3) {
+  caller.doAll(process.argv[3]).then(function (result) {
+    console.log('In the city of ' + result.city + ',\nit\'s ' + result.temp + '\xB0F,\nthe timezone is ' + result.timezone + ',\nand the general elevation is ' + result.elevation + ' ft.\nHave a nice day!');
+    process.exit(0);
   });
+}
+
+var app = new _express2.default();
+app.use(_express2.default.static('./dist/web'));
+
+app.get('/demo', function (req, res) {
+  var zip = req.query.zip;
+  if (zip && zip.length === 5) {
+    caller.doAll(req.query.zip).then(function (result) {
+      return res.status(200).send(result);
+    }).catch(function (error) {
+      return res.status(500).send(error);
+    });
+  } else {
+    res.status(400).end();
+  }
 });
 
-var timezone = new Promise(function (resolve, reject) {
-  weather.then(function (result) {
-    var timeNow = new Date().getTime() / 1000;
-    var options = {
-      uri: 'https://maps.googleapis.com/maps/api/timezone/json',
-      qs: {
-        location: result.lat + ',' + result.long,
-        timestamp: timeNow,
-        key: 'AIzaSyBuHkLcJlxiAYBWVJWoX5zlSw27zxLSm9w'
-      }
-    };
-    (0, _request2.default)(options, function (error, response, body) {
-      resolve({
-        timeZone: JSON.parse(body).timeZoneName
-      });
-    });
-  });
-});
-
-var elevation = new Promise(function (resolve, reject) {
-  weather.then(function (result) {
-    var options = {
-      uri: 'https://maps.googleapis.com/maps/api/elevation/json',
-      qs: {
-        locations: result.lat + ',' + result.long,
-        key: 'AIzaSyANwjqtWWCiPpDBBTUXGT3Jp0JHbgMe9Ps'
-      }
-    };
-    (0, _request2.default)(options, function (error, response, body) {
-      // console.log(JSON.parse(body));
-      resolve({
-        elevation: JSON.parse(body).results[0].elevation
-      });
-    });
-  });
-});
-
-var allPromise = Promise.all([weather, timezone, elevation]);
-
-allPromise.then(function (promises) {
-  console.log(promises[0]);
-  console.log(promises[1]);
-  console.log(promises[2]);
+app.listen(3000, function () {
+  console.log('Server started at localhost on port 3000');
 });
