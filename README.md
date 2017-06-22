@@ -10,4 +10,4 @@ Backend mode, to receive output in cli or terminal:
 
 Full-stack mode, to use web-based ui:  
 ```npm start -- [cipher]```  
-Server will start on localhost:3000.
+Server will start on http://localhost:3000.
