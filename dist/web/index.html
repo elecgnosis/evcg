@@ -1,11 +1,23 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML5>
 <html>
 <head>
   <script type="text/javascript" src="index.js"></script>
+  <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
   <p class="prompt">Please enter a valid, five-digit US zip code.</p>
-  <input type="number" min="5" max="5" class="zip"></input>
+  <input
+    type="number"
+    pattern=".{5,5}"
+    required
+    class="zip">
+  </input>
   <button class="send">Send</button>
-  <p class="result"></p>
+  <div class="result">
+    <p>In the city of <span class="city"></span>,<br>
+      it's <span class="temp"></span>°F,<br>
+      the timezone is <span class="timezone"></span>,<br>
+      and the general elevation is <span class="elevation"></span> ft.<br>
+      Have a nice day!</p>
+  </div>
 </body>

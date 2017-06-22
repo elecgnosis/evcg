@@ -4,9 +4,10 @@
   "description": "Full-stack app to accept zip codes and display weather, time, and elevation.",
   "main": "dist/main.js",
   "scripts": {
+    "build-css": "cpx src/**/*.css dist",
     "build-html": "cpx src/**/*.html dist",
     "build-js": "babel src -d dist",
-    "build": "npm run build-js && npm run build-html",
+    "build": "npm run build-js && npm run build-html && npm run build-css",
     "main": "node dist/main.js",
     "start": "npm run build && npm run main"
   },
