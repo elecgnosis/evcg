@@ -15,22 +15,22 @@ if (process.argv.length > 3) {
     console.log(`In the city of ${result.city},\nit's ${result.temp}°F,\nthe timezone is ${result.timezone},\nand the general elevation is ${result.elevation} ft.\nHave a nice day!`);
     process.exit(0);
   });
-}
+} else {
+  const app = new Express();
+  app.use(Express.static('./dist/web'))
 
-const app = new Express();
-app.use(Express.static('./dist/web'))
-
-app.get('/demo', (req, res) => {
-  const zip = req.query.zip;
-  if (zip && zip.length === 5) {
-    caller.doAll(req.query.zip)
+  app.get('/demo', (req, res) => {
+    const zip = req.query.zip;
+    if (zip && zip.length === 5) {
+      caller.doAll(req.query.zip)
       .then((result) => res.status(200).send(result))
       .catch((error) => res.status(500).send(error));
-  } else {
-    res.status(400).end();
-  }
-});
+    } else {
+      res.status(400).end();
+    }
+  });
 
-app.listen(3000, () => {
-  console.log('Server started at localhost on port 3000');
-});
+  app.listen(3000, () => {
+    console.log('Server started at localhost on port 3000');
+  });
+}

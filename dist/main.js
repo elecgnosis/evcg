@@ -30,24 +30,24 @@ if (process.argv.length > 3) {
     console.log('In the city of ' + result.city + ',\nit\'s ' + result.temp + '\xB0F,\nthe timezone is ' + result.timezone + ',\nand the general elevation is ' + result.elevation + ' ft.\nHave a nice day!');
     process.exit(0);
   });
+} else {
+  var app = new _express2.default();
+  app.use(_express2.default.static('./dist/web'));
+
+  app.get('/demo', function (req, res) {
+    var zip = req.query.zip;
+    if (zip && zip.length === 5) {
+      caller.doAll(req.query.zip).then(function (result) {
+        return res.status(200).send(result);
+      }).catch(function (error) {
+        return res.status(500).send(error);
+      });
+    } else {
+      res.status(400).end();
+    }
+  });
+
+  app.listen(3000, function () {
+    console.log('Server started at localhost on port 3000');
+  });
 }
-
-var app = new _express2.default();
-app.use(_express2.default.static('./dist/web'));
-
-app.get('/demo', function (req, res) {
-  var zip = req.query.zip;
-  if (zip && zip.length === 5) {
-    caller.doAll(req.query.zip).then(function (result) {
-      return res.status(200).send(result);
-    }).catch(function (error) {
-      return res.status(500).send(error);
-    });
-  } else {
-    res.status(400).end();
-  }
-});
-
-app.listen(3000, function () {
-  console.log('Server started at localhost on port 3000');
-});
